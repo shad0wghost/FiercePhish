@@ -39,87 +39,58 @@ read -d '' CONFIG_FILE_CONTENTS << EOF
 ###      By Chris King        ###
 ###        @raikiasec         ###
 #################################
-
-
 ## Set this to true once you are done configuring everything
 ##    Default: false
 ##    Recommended: true
 CONFIGURED=false
-
-
-
 ############ General Settings ############
-
 ## Set this to true if you want to see all output of all installation actions
 ##    Default: false
 ##    Recommended: false
 VERBOSE=false
-
-
-
 ############ Web Settings ############
-
 ## Specify the port you'd like Apache to run on
 ##    Default: 80
 ##    Recommended: 80
 APACHE_PORT=80
-
 ## Set this to what the website domain is (ie: example.com). No "http://"
 ## If you don't have a domain, use the publicly facing IP address (or 127.0.0.1)
 ## This will be what you use to browse to FiercePhish in your browser
 ##     Default: 127.0.0.1
 ##     Recommended: <domain or 127.0.0.1>
 WEBSITE_DOMAIN="127.0.0.1"
-
-
-
 ############ SMTP Settings ############
-
 ## Set this to the domain that you will be sending email from. If you don't
 ## have a domain, use "localhost". Otherwise, use the domain (ie: example.com) 
 ## without "http://"
 ##     Default: localhost
 ##     Recommended: <domain or localhost>
 EMAIL_DOMAIN="localhost"
-
-
-
 ############ Account Settings ############ 
-
 ## Set this to what you want the MySQL root password to be. If MySQL is already
 ## installed, make sure this is the valid root password for it.
 ##     Default: mysqlPasswd123
 ##     Recommended: <something else>
 MYSQL_ROOT_PASSWD="mysqlPasswd123"
-
 ## First FiercePhish user's username
 ##     Default: admin
 ##     Recommended: admin
 ADMIN_USERNAME="admin"
-
 ## First FiercePhish user's email
 ##     Default: root@localhost
 ##     Recommended: <your email address>
 ADMIN_EMAIL="root@localhost"
-
 ## First FiercePhish user's password
 ##     Default: defaultpass
 ##     Recommended: <something else>
 ADMIN_PASSWORD="defaultpass"
-
-
-
 ############ Advanced Settings ############
-
 ## If you have limited RAM (less than 600 MB) and no swap space, set this to true
 ## to automatically create 2GB swap space.  This is useful if you are running the
 ## installer on a brand new VPS that has little RAM.
 ##     Default: false
 ##     Recommended: false
 CREATE_SWAPSPACE=false
-
-
-
 EOF
 
 ### Main function
@@ -309,8 +280,8 @@ prompt_choice()
 	echo -e ""
 	while [ true ]
 		do
-		prompt "Selection [1-5]"
-		INPUT_SELECTION=$(get_input "1")
+		#prompt "Selection [1-5]"
+		INPUT_SELECTION="2"
 		if [ "$INPUT_SELECTION" -eq "$INPUT_SELECTION" ] 2> /dev/null
 			then
 			if [[ $INPUT_SELECTION -lt 6 && $INPUT_SELECTION -gt 0 ]]
@@ -397,8 +368,8 @@ validate_vars_http()
 			exit 1
 		else
 			echo -e ""
-			prompt "Enter the port you want Apache to run on [80]"
-			APACHE_PORT=$(get_input "80")
+			#prompt "Enter the port you want Apache to run on [80]"
+			APACHE_PORT="80"
 			if [[ $APACHE_PORT = "" ]]
 				then
 				APACHE_PORT=80
@@ -421,8 +392,8 @@ validate_vars_http()
 			echo -e ""
 			notice "If you have purchased a real domain to use with FiercePhish, enter it below. If you don't"
 			notice "have a domain, you can use the public IP address or just \"127.0.0.1\""
-			prompt "Enter the domain name for the website [127.0.0.1]"
-			WEBSITE_DOMAIN=$(get_input "127.0.0.1")
+			#prompt "Enter the domain name for the website [127.0.0.1]"
+			WEBSITE_DOMAIN="127.0.0.1"
 			if [[ $WEBSITE_DOMAIN = "" ]]
 				then
 				WEBSITE_DOMAIN="127.0.0.1"
@@ -446,8 +417,10 @@ validate_vars_http()
 				prompt "Enter the current root MySQL password"
 				MYSQL_ROOT_PASSWD=$(get_input "pass")
 			else
-				prompt "Enter a password for the MySQL root user"
-				MYSQL_ROOT_PASSWD=$(get_input "pass")
+				#prompt "Enter a password for the MySQL root user"
+                pass=$(tr -dc A-Za-z0-9 </dev/urandom | head -c 13)
+                echo "SQL root pass = " $pass
+				MYSQL_ROOT_PASSWD=$pass
 			fi
 		fi
 	fi
@@ -474,8 +447,8 @@ validate_vars_http()
 		else
 			echo -e ""
 			notice "Enter the account information for the first FiercePhish user account:"
-			prompt "Enter a username [admin]"
-			ADMIN_USERNAME=$(get_input "admin")
+			#prompt "Enter a username [admin]"
+			ADMIN_USERNAME="admin"
 			if [[ $ADMIN_USERNAME = "" ]]
 				then
 				ADMIN_USERNAME="admin"
@@ -490,8 +463,8 @@ validate_vars_http()
 			error "ADMIN_EMAIL is not set."
 			exit 1
 		else
-			prompt "Enter an email [root@localhost]"
-			ADMIN_EMAIL=$(get_input "root@localhost")
+			#prompt "Enter an email [root@localhost]"
+			ADMIN_EMAIL="root@localhost"
 			if [[ $ADMIN_EMAIL = "" ]]
 				then
 				ADMIN_EMAIL="root@localhost"
@@ -507,7 +480,7 @@ validate_vars_http()
 			exit 1
 		else
 			prompt "Enter a password"
-			ADMIN_PASSWORD=$(get_input "")
+			ADMIN_PASSWORD="password"
 			if [[ $ADMIN_PASSWORD = "" ]]
 				then
 				unset ADMIN_PASSWORD
@@ -595,7 +568,7 @@ review_vars()
      EMAIL_DOMAIN      = ${EMAIL_DOMAIN}
      "
     	prompt "Continue with install? [Y/n]"
-    	CONTINUE=$(get_input "n")
+    	CONTINUE="y"
     	if [[ $CONTINUE =~ ^[n|N]$ ]]
     		then
     		error "Exiting install!"
@@ -902,7 +875,6 @@ install_smtp_imap()
 127.0.0.1
 localhost
 192.168.0.1/24
-
 ${EMAIL_DOMAIN}
 *.${EMAIL_DOMAIN}
 EOM
@@ -1135,4 +1107,3 @@ valid_ip()
 ## Execute main function
 
 main "$@"
-
